@@ -1,15 +1,10 @@
-package com.example.regalosnavidad.ui.screens
+package com.example.trivial.ui.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,13 +13,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.trivial.R
+import com.example.trivial.ui.state.VM
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -32,13 +28,17 @@ import com.example.trivial.R
 @Composable
 fun LastScreen(
     navigateToFirstScreen: () -> Unit,
+    viewModel: VM,
 ) {
+    val state by viewModel.state.collectAsState()
+
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "FELIZ",
+                        text = "Pantalla Final",
                         textAlign = TextAlign.Center,
                     )
                 },
@@ -50,25 +50,6 @@ fun LastScreen(
                     scrolledContainerColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                content = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Text(
-                            text = "NAVIPEICH",
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                    }
-                }
-            )
-
         }
     ) {
         Column(
@@ -76,25 +57,19 @@ fun LastScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Estos han sido los regalitos miamor.\n Espero que te hayan gustado, ahora toca disfrutarlos jejej.\n Te quierooooooooooooo",
-                modifier = Modifier.padding(20.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Image(
-                modifier = Modifier
-                    .size(300.dp)
-                /*.graphicsLayer(
-                    rotationZ = 90f // Rota la imagen 90 grados
-                )*/,
-                painter = painterResource(id = R.drawable.ic_launcher_background),
-                contentDescription = "foto"
-            )
+            CustomText("Ha finalizado el juego. Para volver a jugar, vuelve a la pantalla de inicio")
+            CustomText("Puntuación: ${state.points}")
+            CustomText("Preguntas acertadas: ${state.correctAnswers}")
+            CustomText("Preguntas falladas: ${state.wrongAnswers}")
+
             Button(
                 modifier = Modifier.padding(40.dp),
-                onClick = { navigateToFirstScreen() }
+                onClick = {
+                    viewModel.updateRecord()
+                    navigateToFirstScreen()
+                    viewModel.resetPoinment()
+                    viewModel.resetEnableds()
+                }
             ) {
                 Text(
                     text = "Volver al inicio",
@@ -110,5 +85,5 @@ fun LastScreen(
 @Preview(showBackground = true)
 @Composable
 fun LastScreenPreview() {
-    LastScreen({})
+    LastScreen({}, viewModel = VM())
 }

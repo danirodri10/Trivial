@@ -36,21 +36,18 @@ import com.example.trivial.ui.state.VM
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayScreen(
-    navigateToSecondGiftScreen: () -> Unit,
+    navigateToLastScreen: () -> Unit,
     navigateBack: () -> Unit,
     viewModel: VM,
 ) {
     val state by viewModel.state.collectAsState()
 
-    /*
-    * ME HE QUEDADO EN IMPLEMENTAR LOS MÉTODOS PARA CAMBIAR DE PREGUNTA DEL VIEWMODEL
-    * CHATGPT: PREGUNTAS PARA TRIVIAL
-    * */
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
+                    //le ponemos +1 para que no parta de 0 (la lista parte del índice 0, pero no queremos una pregunta 0)
                     Text("Pregunta: ${state.currentQuestionIndex + 1}/${state.questionsQuantity}")
                 },
                 navigationIcon = {
@@ -75,6 +72,7 @@ fun PlayScreen(
             )
         }
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -82,63 +80,119 @@ fun PlayScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            FirstGiftContentScreen(
+            ContentPlayScreen(
+                points = state.points,
                 question = viewModel.getCurrentQuestion(),
-                state.finalText,
+                state.resultText,
                 enabledNavigate = state.check,
                 enabledOptions = state.checkOptions,
-                navigateToSecondGiftScreen = navigateToSecondGiftScreen
+                onOptionClicked = { selectedOption -> viewModel.onOptionClicked(selectedOption) },
+                nextQuestion = { viewModel.nextQuestion() },
+                resetEnableds = { viewModel.resetEnableds() },
+                questionsQuantity = state.questionsQuantity,
+                currentQuestion = state.currentQuestionIndex,
+                navigateToLastScreen = navigateToLastScreen
             )
         }
     }
 }
 
 @Composable
-fun FirstGiftContentScreen(
+fun ContentPlayScreen(
+    points: Int,
     question: Question,
     finalText: String,
     enabledNavigate: Boolean,
     enabledOptions: Boolean,
-    //updateFinalText: () -> Unit,
-    navigateToSecondGiftScreen: () -> Unit,
+    onOptionClicked: (String) -> Unit,
+    nextQuestion: () -> Unit,
+    resetEnableds: () -> Unit,
+    questionsQuantity: Int,
+    currentQuestion: Int,
+    navigateToLastScreen: () -> Unit,
 ) {
-    Card {
-        Row(
-            modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Mostrar la puntuación
+        Text(
+            text = "Puntuación: $points", // Asegúrate de que `score` está disponible en `Question`
+            modifier = Modifier.padding(bottom = 8.dp),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        // Tarjeta con la pregunta y opciones
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         ) {
-            CustomText("Pregunta: ${question.text}")
-        }
-        question.options.forEach { option ->
-            Row(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(
-                    onClick = {/**/ },
-                    enabled = enabledOptions
+                // Pregunta
+                Row(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = option
-                    )
+                    CustomText("Pregunta: ${question.text}")
+                }
+
+                // Opciones
+                question.options.forEach { option ->
+                    Row(
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                onOptionClicked(option)
+                            },
+                            enabled = enabledOptions
+                        ) {
+                            Text(
+                                text = option
+                            )
+                        }
+                    }
+                }
+
+                // Texto de resultado
+                CustomText(text = "Clicka una de las opciones")
+                if (!enabledOptions) {
+                    CustomText(finalText)
                 }
             }
         }
-        CustomText(text = "Clicka una de las opciones")
-    }
-    CustomText(finalText)
-    Button(
-        onClick = { navigateToSecondGiftScreen() },
-        enabled = enabledNavigate
-    ) {
-        Text("Siguiente Pregunta")
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-            contentDescription = "siguiente regalo"
-        )
+
+        // Botón de siguiente pregunta
+        Button(
+            onClick = {
+                //le restamos -1 al toal de preguntas, ya que al partir de 0 en la lista hay que restarle 1 al total
+                if (currentQuestion < questionsQuantity - 1) {
+                    nextQuestion()
+                    resetEnableds()
+                } else {
+                    navigateToLastScreen()
+                }
+            },
+            enabled = enabledNavigate
+        ) {
+            Text("Siguiente Pregunta")
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = "Siguiente pregunta"
+            )
+        }
     }
 }
+
 
 @Composable
 fun CustomText(text: String) {
@@ -153,6 +207,6 @@ fun CustomText(text: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun FirstGiftScreenPreview() {
+fun PlayScreenPreview() {
     PlayScreen({}, {}, viewModel = VM())
 }

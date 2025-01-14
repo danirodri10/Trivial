@@ -9,7 +9,7 @@ import com.example.trivial.ui.state.VM
 import com.example.trivial.ui.screens.PlayScreen
 import com.example.trivial.ui.screens.HomeScreen
 import com.example.regalosnavidad.ui.navigation.AppScreens
-import com.example.regalosnavidad.ui.screens.LastScreen
+import com.example.trivial.ui.screens.LastScreen
 
 @Composable
 fun AppNavigation() {
@@ -31,7 +31,12 @@ fun AppNavigation() {
         composable(AppScreens.PLAY_SCREEN.name) {
             // Pasamos el ViewModel a la PlayScreen
             PlayScreen(
-                navigateToSecondGiftScreen = { navController.navigate(AppScreens.LAST_SCREEN.name) },
+                navigateToLastScreen = {
+                    navController.navigate(AppScreens.LAST_SCREEN.name) {
+                        //popUpTo elimina la pila de pantallas hasta la pantalla que le indiquemos, marcando si incluída o no
+                        popUpTo(AppScreens.HOME_SCREEN.name) { inclusive = true }
+                    }
+                },
                 navigateBack = { navController.popBackStack() },
                 viewModel = viewModel // Aquí también se pasa el mismo ViewModel de la pantalla anterior actualizado
             )
@@ -39,7 +44,12 @@ fun AppNavigation() {
 
         composable(AppScreens.LAST_SCREEN.name) {
             LastScreen(
-                navigateToFirstScreen = { navController.navigate(AppScreens.HOME_SCREEN.name) }
+                navigateToFirstScreen = {
+                    navController.navigate(AppScreens.HOME_SCREEN.name) {
+                        popUpTo(AppScreens.LAST_SCREEN.name) { inclusive = true }
+                    }
+                },
+                viewModel = viewModel
             )
         }
     }

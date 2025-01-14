@@ -111,6 +111,7 @@ fun HomeScreen(
                     contentDescription = "Empezar"
                 )
             }
+            ContentScreen("Récord: ${state.recordPoinment}")
         }
     }
 }
@@ -128,6 +129,6 @@ fun ContentScreen(text: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun ShowFirstScreen() {
+fun HomeScreen() {
     HomeScreen({}, viewModel = VM())
 }

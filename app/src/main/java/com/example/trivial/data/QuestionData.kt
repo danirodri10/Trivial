@@ -36,7 +36,12 @@ object QuestionData {
         ),
         Question(
             text = "¿Quién escribió 'Cien años de soledad'?",
-            options = listOf("Pablo Neruda", "Gabriel García Márquez", "Mario Vargas Llosa", "Carlos Fuentes"),
+            options = listOf(
+                "Pablo Neruda",
+                "Gabriel García Márquez",
+                "Mario Vargas Llosa",
+                "Carlos Fuentes"
+            ),
             correctAnswer = "Gabriel García Márquez"
         ),
         Question(

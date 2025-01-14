@@ -60,13 +60,55 @@ class VM : ViewModel() {
         return questions[currentQuestionIndex]
     }
 
+    // Función para manejar el clic en una opción
+    fun onOptionClicked(selectedOption: String) {
+        val currentQuestion = getCurrentQuestion()//obtenemos la pregunta actual
+        val isCorrect = currentQuestion.correctAnswer == selectedOption
 
-    /*//Función para manejar el estado del textField
-    fun updateNewProductName(newName: String) {
+        // Actualizar el estado
         _state.update { currentState ->
-            currentState.copy(newWord = newName)
+            currentState.copy(
+                checkOptions = false, // Desactivamos los botones de las opciones
+                check = true,//activamos el botón de ir a la siguiente pregunta
+                resultText = if (isCorrect) "¡Respuesta Correcta!" else "Respuesta Incorrecta",
+                points = if (isCorrect) _state.value.points + 1 else _state.value.points,
+                correctAnswers = if (isCorrect) _state.value.correctAnswers + 1 else _state.value.correctAnswers,
+                wrongAnswers = if (!isCorrect) _state.value.wrongAnswers + 1 else _state.value.wrongAnswers,
+            )
         }
-    }*/
+    }
 
+    //función para restablecer los valores de los enabled para la siguiente pregunta
+    fun resetEnableds() {
+        _state.update { currentstate ->
+            currentstate.copy(
+                checkOptions = true,
+                check = false
+            )
+        }
+    }
+
+    //función para actualizar el record
+    fun updateRecord() {
+        _state.update { currentstate ->
+            currentstate.copy(
+                recordPoinment = if (currentstate.points > currentstate.recordPoinment) currentstate.points else currentstate.recordPoinment
+            )
+        }
+    }
+
+    //función para actualizar el record
+    fun resetPoinment() {
+        _state.update { currentstate ->
+            currentstate.copy(
+                points = 0,
+                correctAnswers = 0,
+                wrongAnswers = 0
+            )
+        }
+    }
 
 }
+
+
+
