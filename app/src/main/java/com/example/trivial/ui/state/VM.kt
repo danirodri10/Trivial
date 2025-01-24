@@ -14,6 +14,15 @@ class VM : ViewModel() {
     val state: StateFlow<State> =
         _state.asStateFlow()
 
+    //asginamos las preguntas del data al estado al iniciar la app
+    init {
+        _state.update { currentState ->
+            currentState.copy(
+                questions = QuestionData.questions.shuffled() // Mezclamos las preguntas aquí si lo necesitas
+            )
+        }
+    }
+
     // Incrementar la cantidad de preguntas
     fun incrementQuestions(maxQuestions: Int) {
         _state.update { currentState ->
@@ -55,9 +64,7 @@ class VM : ViewModel() {
 
     // Función para obtener la pregunta actual
     fun getCurrentQuestion(): Question {
-        val questions = QuestionData.questions
-        val currentQuestionIndex = _state.value.currentQuestionIndex
-        return questions[currentQuestionIndex]
+        return _state.value.questions[_state.value.currentQuestionIndex]
     }
 
     // Función para manejar el clic en una opción
@@ -97,13 +104,15 @@ class VM : ViewModel() {
         }
     }
 
-    //función para actualizar el record
-    fun resetPoinment() {
+    //función para reiniciar el juego
+    fun resetGame() {
         _state.update { currentstate ->
             currentstate.copy(
                 points = 0,
                 correctAnswers = 0,
-                wrongAnswers = 0
+                wrongAnswers = 0,
+                currentQuestionIndex = 0,//se asegura que al mezclar las preguntas, accedemos a la primera, de manera que la próxima vez que se mezclen será distinta
+                questions = QuestionData.questions.shuffled()//mezclamos las preguntas
             )
         }
     }

@@ -67,7 +67,7 @@ fun LastScreen(
                 onClick = {
                     viewModel.updateRecord()
                     navigateToFirstScreen()
-                    viewModel.resetPoinment()
+                    viewModel.resetGame()
                     viewModel.resetEnableds()
                 }
             ) {
