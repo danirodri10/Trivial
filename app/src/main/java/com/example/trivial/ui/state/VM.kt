@@ -1,14 +1,22 @@
 package com.example.trivial.ui.state
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.trivial.TrivialApp
+import com.example.trivial.data.TrivialRepository
 import com.example.trivial.model.Question
 import com.example.trivial.ui.data.QuestionData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class VM : ViewModel() {
+class VM(private val repository: TrivialRepository) : ViewModel() {
     private val _state =
         MutableStateFlow(State())
     val state: StateFlow<State> =
@@ -16,19 +24,32 @@ class VM : ViewModel() {
 
     //asginamos las preguntas del data al estado al iniciar la app
     init {
-        _state.update { currentState ->
-            currentState.copy(
-                questions = QuestionData.questions.shuffled() // Mezclamos las preguntas aquí si lo necesitas
-            )
+        //lanzamos la corrutina
+        viewModelScope.launch {
+            try {
+                //obtenemos las preguntas de la Api y las transformamos a la estructura de preguntas de nuestro trivial
+                val apiQuestions = repository.getApiQuestions().map { it.toQuestion() }
+                _state.update { currentState ->
+                    currentState.copy(
+                        questions = apiQuestions
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update { currentState ->
+                    currentState.copy(
+                        questions = QuestionData.questions
+                    )
+                }
+            }
         }
     }
 
     // Incrementar la cantidad de preguntas
-    fun incrementQuestions(maxQuestions: Int) {
+    fun incrementQuestions() {
         _state.update { currentState ->
             currentState.copy(
-                //coerceAtMost(valorMaximo) garantiza que el valor de la variable no sea mayor a ese valor
-                questionsQuantity = (currentState.questionsQuantity + 1).coerceAtMost(maxQuestions)
+                //coerceAtMost() garantiza que el valor de la variable no sea mayor a ese valor
+                questionsQuantity = (currentState.questionsQuantity + 1).coerceAtMost(currentState.questions.size)
             )
         }
     }
@@ -112,8 +133,31 @@ class VM : ViewModel() {
                 correctAnswers = 0,
                 wrongAnswers = 0,
                 currentQuestionIndex = 0,//se asegura que al mezclar las preguntas, accedemos a la primera, de manera que la próxima vez que se mezclen será distinta
-                questions = QuestionData.questions.shuffled()//mezclamos las preguntas
+                questions = currentstate.questions.shuffled()//mezclamos las preguntas
             )
+        }
+    }
+
+
+    // ViewModel Factory
+    /*
+    Explicación de la función viewModelFactory:
+    - Esta función crea un ViewModelProvider.Factory que inicializa un GameViewModel.
+    - La función initializer se encarga de inicializar el GameViewModel con el QuestionRepository.
+    - La función viewModelFactory recibe un lambda que retorna un ViewModelProvider.Factory.
+    - El lambda recibe un mapa de parámetros y retorna un ViewModel.
+    - En este caso, el lambda recibe un mapa con un parámetro APPLICATION_KEY que es un TriviaApplication.
+    - El ViewModel se inicializa con el QuestionRepository obtenido del TriviaApplication.
+    Este companion object es necesario para poder crear un ViewModelProvider.Factory que inicialice un GameViewModel.
+    La palabra reservada companion object permite definir un objeto que es parte de la clase GameViewModel.
+     */
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as TrivialApp)
+                val repository = application.container.provideTrivialRepository
+                VM(repository)
+            }
         }
     }
 

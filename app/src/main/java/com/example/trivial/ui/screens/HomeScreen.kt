@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.trivial.ui.data.QuestionData
 import com.example.trivial.ui.state.VM
 
@@ -36,7 +37,7 @@ import com.example.trivial.ui.state.VM
 @Composable
 fun HomeScreen(
     navigateToPlayScreen: () -> Unit,
-    viewModel: VM,
+    viewModel: VM = viewModel(factory = VM.Factory),
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -83,7 +84,7 @@ fun HomeScreen(
                 )
                 IconButton(
                     onClick = {
-                        viewModel.incrementQuestions(QuestionData.questions.size)
+                        viewModel.incrementQuestions()
                     }
                 ) {
                     Icon(
@@ -127,8 +128,8 @@ fun ContentScreen(text: String) {
     )
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
-fun HomeScreen() {
+fun HomeScreenPreview() {
     HomeScreen({}, viewModel = VM())
-}
+}*/

@@ -17,7 +17,7 @@ fun AppNavigation() {
 
     // Aquí se obtiene el ViewModel a nivel de NavHost, lo que permite compartir el mismo ViewModel en todas las pantallas
     //así no se reincia el VM cuando navegamos mantiene las actualizaciones de los valores
-    val viewModel: VM = viewModel()
+    val viewModel: VM = viewModel(factory = VM.Factory)
 
     NavHost(navController = navController, startDestination = AppScreens.HOME_SCREEN.name) {
         composable(AppScreens.HOME_SCREEN.name) {

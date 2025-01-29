@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    //plugin serialization de json a objetos
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -50,6 +52,17 @@ android {
 }
 
 dependencies {
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Kotlinx Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+    // OkHttp: Cliente HTTP utilizado por Retrofit
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+    // Convertidor para Retrofit con Kotlinx Serialization
+    implementation(libs.converter.gson) // Usar Gson si no tienes un convertidor nativo para Kotlinx Serialization
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

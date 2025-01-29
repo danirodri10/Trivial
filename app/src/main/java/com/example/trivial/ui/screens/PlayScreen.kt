@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.trivial.model.Question
 import com.example.trivial.ui.state.VM
 
@@ -38,7 +39,7 @@ import com.example.trivial.ui.state.VM
 fun PlayScreen(
     navigateToLastScreen: () -> Unit,
     navigateBack: () -> Unit,
-    viewModel: VM,
+    viewModel: VM = viewModel(factory = VM.Factory),
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -139,7 +140,7 @@ fun ContentPlayScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    CustomText("Pregunta: ${question.text}")
+                    CustomText("Pregunta: ${question.rawQuestion}")
                 }
 
                 // Opciones
@@ -174,7 +175,7 @@ fun ContentPlayScreen(
         // Botón de siguiente pregunta
         Button(
             onClick = {
-                //le restamos -1 al toal de preguntas, ya que al partir de 0 en la lista hay que restarle 1 al total
+                //le restamos -1 al total de preguntas, ya que al partir de 0 en la lista hay que restarle 1 al total
                 if (currentQuestion < questionsQuantity - 1) {
                     nextQuestion()
                     resetEnableds()
@@ -205,8 +206,8 @@ fun CustomText(text: String) {
     )
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun PlayScreenPreview() {
     PlayScreen({}, {}, viewModel = VM())
-}
+}*/
