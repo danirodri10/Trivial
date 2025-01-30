@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.trivial.model.Question
@@ -92,7 +91,7 @@ fun PlayScreen(
                 resetEnableds = { viewModel.resetEnableds() },
                 questionsQuantity = state.questionsQuantity,
                 currentQuestion = state.currentQuestionIndex,
-                navigateToLastScreen = navigateToLastScreen
+                navigateToLastScreen = navigateToLastScreen,
             )
         }
     }
@@ -111,6 +110,7 @@ fun ContentPlayScreen(
     questionsQuantity: Int,
     currentQuestion: Int,
     navigateToLastScreen: () -> Unit,
+
 ) {
     Column(
         modifier = Modifier
@@ -140,10 +140,10 @@ fun ContentPlayScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    CustomText("Pregunta: ${question.rawQuestion}")
+                    CustomText("Pregunta: ${question.question}")
                 }
 
-                // Opciones
+                // Opciones de respuesta
                 question.options.forEach { option ->
                     Row(
                         modifier = Modifier
@@ -155,7 +155,7 @@ fun ContentPlayScreen(
                             onClick = {
                                 onOptionClicked(option)
                             },
-                            enabled = enabledOptions
+                            enabled = enabledOptions,
                         ) {
                             Text(
                                 text = option

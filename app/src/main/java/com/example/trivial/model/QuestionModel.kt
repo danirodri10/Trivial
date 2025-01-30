@@ -8,6 +8,7 @@ data class Question(
     val rawOptions: List<String>,
     val rawCorrectAnswer: String, // Índice de la respuesta correcta
 ) {
+    //decodificamos los formatos HTML que nos llegan de la searialización del JSON de la API (Después de transformar el objeto QuestionApi a este Question)
     val question: String
         get() = rawQuestion.decodeHtml()
 

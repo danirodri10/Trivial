@@ -22,7 +22,7 @@ class VM(private val repository: TrivialRepository) : ViewModel() {
     val state: StateFlow<State> =
         _state.asStateFlow()
 
-    //asginamos las preguntas del data al estado al iniciar la app
+    //asginamos las preguntas de la API al estado al iniciar la app
     init {
         //lanzamos la corrutina
         viewModelScope.launch {
@@ -31,6 +31,7 @@ class VM(private val repository: TrivialRepository) : ViewModel() {
                 val apiQuestions = repository.getApiQuestions().map { it.toQuestion() }
                 _state.update { currentState ->
                     currentState.copy(
+                        //le asignamos al estado las preguntas obtenidas de la llamada
                         questions = apiQuestions
                     )
                 }
@@ -49,7 +50,7 @@ class VM(private val repository: TrivialRepository) : ViewModel() {
         _state.update { currentState ->
             currentState.copy(
                 //coerceAtMost() garantiza que el valor de la variable no sea mayor a ese valor
-                questionsQuantity = (currentState.questionsQuantity + 1).coerceAtMost(currentState.questions.size)
+                questionsQuantity = (currentState.questionsQuantity + 1).coerceAtMost(10)
             )
         }
     }
@@ -102,9 +103,11 @@ class VM(private val repository: TrivialRepository) : ViewModel() {
                 points = if (isCorrect) _state.value.points + 1 else _state.value.points,
                 correctAnswers = if (isCorrect) _state.value.correctAnswers + 1 else _state.value.correctAnswers,
                 wrongAnswers = if (!isCorrect) _state.value.wrongAnswers + 1 else _state.value.wrongAnswers,
+                selectedOption = selectedOption,
             )
         }
     }
+
 
     //función para restablecer los valores de los enabled para la siguiente pregunta
     fun resetEnableds() {

@@ -6,5 +6,6 @@ import retrofit2.http.GET
 // Define la interfaz de servicio web con las operaciones disponibles
 interface ApiService {
     @GET("api.php?amount=10&type=multiple")
-    suspend fun getApiQuestions(): List<QuestionApiResponse.QuestionApi>
+    //obtenemos un objeto QuestionApiResponse, que contiene un array de preguntas
+    suspend fun getApiQuestions(): QuestionApiResponse
 }

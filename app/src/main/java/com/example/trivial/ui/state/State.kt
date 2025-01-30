@@ -1,5 +1,6 @@
 package com.example.trivial.ui.state
 
+
 import com.example.trivial.model.Question
 
 data class State(
@@ -13,5 +14,6 @@ data class State(
     val correctAnswers: Int = 0,
     val wrongAnswers: Int = 0,
     val recordPoinment: Int = 0,
-    val questions: List<Question> = emptyList()
+    val questions: List<Question> = emptyList(),
+    val selectedOption: String = "",
 )

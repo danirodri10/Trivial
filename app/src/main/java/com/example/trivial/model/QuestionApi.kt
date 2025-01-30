@@ -3,11 +3,12 @@ package com.example.trivial.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-//obtenemos la lista de preguntas de la API
+//único objeto (QuestionApiResponse) que obtenemos de la llamada a la API
 @Serializable
 data class QuestionApiResponse(
     val results: List<QuestionApi>,
 ) {
+    //clase para cada una de las preguntas
     @Serializable
     data class QuestionApi(
         @SerialName("question")

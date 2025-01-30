@@ -11,8 +11,10 @@ interface TrivialRepositoryInterface {
 class TrivialRepository(private val apiService: ApiService) : TrivialRepositoryInterface {
     override suspend fun getApiQuestions(): List<QuestionApiResponse.QuestionApi> {
         return try {
-            apiService.getApiQuestions()
+            // Accede a la propiedad "results" del objeto QuestionApiResponse
+            apiService.getApiQuestions().results
         } catch (e: Exception) {
+            //Devolvemos una lista vacía en caso de error
             emptyList()
         }
     }
