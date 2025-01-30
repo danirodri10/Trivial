@@ -71,6 +71,7 @@ fun PlayScreen(
                 )
             )
         }
+
     ) {
 
         Column(
